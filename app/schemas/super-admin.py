@@ -2,7 +2,8 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
-class SuperAdmin(BaseModel):
+
+class SuperAdminResponse(BaseModel):
     id: str
     name: str
     email: EmailStr

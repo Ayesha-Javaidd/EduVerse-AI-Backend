@@ -12,7 +12,7 @@ class AdminCreate(BaseModel):
     contactNo: Optional[str] = None
     country: Optional[str] = None
 
-class Admin(BaseModel):
+class AdminResponse(BaseModel):
     id: str
     tenant_id: str
     fullName: str
@@ -28,4 +28,3 @@ class Admin(BaseModel):
 
     class Config:
         orm_mode = True
-

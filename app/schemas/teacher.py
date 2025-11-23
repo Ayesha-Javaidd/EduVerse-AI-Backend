@@ -2,7 +2,6 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
-
 class TeacherCreate(BaseModel):
     tenant_id: str
     name: str
@@ -12,7 +11,8 @@ class TeacherCreate(BaseModel):
     contactNo: Optional[str] = None
     country: Optional[str] = None
 
-class Teacher(BaseModel):
+
+class TeacherResponse(BaseModel):
     id: str
     tenant_id: str
     name: str
@@ -20,6 +20,8 @@ class Teacher(BaseModel):
     profileImageURL: Optional[str] = None
     assignedCourses: List[str] = []
     status: str
+    contactNo: Optional[str] = None
+    country: Optional[str] = None
     createdAt: datetime
     updatedAt: datetime
 
