@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 
 class AdminCreate(BaseModel):
-    tenant_id: str
+    # tenant_id: str
     fullName: str
     orgName: str
     email: EmailStr
@@ -14,7 +14,7 @@ class AdminCreate(BaseModel):
 
 class AdminResponse(BaseModel):
     id: str
-    tenant_id: str
+    tenant_id: Optional[str] = None
     fullName: str
     orgName: str
     email: EmailStr

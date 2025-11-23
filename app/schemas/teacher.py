@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 
 class TeacherCreate(BaseModel):
-    tenant_id: str
+    # tenant_id: str
     name: str
     email: EmailStr
     password: str
@@ -14,7 +14,7 @@ class TeacherCreate(BaseModel):
 
 class TeacherResponse(BaseModel):
     id: str
-    tenant_id: str
+    tenant_id: Optional[str] = None
     name: str
     email: EmailStr
     profileImageURL: Optional[str] = None
