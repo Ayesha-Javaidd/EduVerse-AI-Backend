@@ -8,3 +8,5 @@ router = APIRouter(prefix="/students", tags=["students"])
 async def create_student(student: StudentCreate):
     new_student = await crud_create_student(student)
     return StudentResponse(**new_student)
+
+

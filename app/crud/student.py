@@ -14,3 +14,4 @@ async def create_student(student: StudentCreate):
     new_student = await db.students.find_one({"_id": result.inserted_id})
     new_student["id"] = str(new_student["_id"])
     return new_student
+
