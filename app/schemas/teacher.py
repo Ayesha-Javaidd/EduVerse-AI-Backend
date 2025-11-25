@@ -6,6 +6,7 @@ class TeacherCreate(BaseModel):
     # tenant_id: str
     name: str
     email: EmailStr
+    status:  Optional[str] = None
     password: str
     profileImageURL: Optional[str] = None
     contactNo: Optional[str] = None

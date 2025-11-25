@@ -9,9 +9,11 @@ class AdminCreate(BaseModel):
     email: EmailStr
     password: str
     profileImageURL: Optional[str] = None
-    contactNo: Optional[str] = None
+    contactNo: str
     country: Optional[str] = None
+    status: str 
 
+    
 class AdminResponse(BaseModel):
     id: str
     tenant_id: Optional[str] = None
