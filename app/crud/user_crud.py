@@ -21,8 +21,12 @@ def serialize_user(u):
         "lastLogin": u.get("lastLogin")
     }
 
+# async def get_user_by_email(email: str):
+#     return await db.users.find_one({"email": email})
+
 async def get_user_by_email(email: str):
-    return await db.users.find_one({"email": email})
+    return await db.users.find_one({"email": email.lower()})
+
 
 async def create_user(data: dict):
     data["password"] = hash_password(data["password"])
@@ -33,13 +37,25 @@ async def create_user(data: dict):
     new_user = await db.users.find_one({"_id": result.inserted_id})
     return serialize_user(new_user)
 
+# async def verify_user(email: str, password: str):
+#     u = await get_user_by_email(email)
+#     if not u:
+#         return None
+#     if not verify_password(password, u["password"]):
+#         return None
+#     return serialize_user(u)
+
+
 async def verify_user(email: str, password: str):
     u = await get_user_by_email(email)
     if not u:
+        print("User not found:", email)
         return None
     if not verify_password(password, u["password"]):
+        print("Password mismatch")
         return None
     return serialize_user(u)
+
 
 async def update_last_login(user_id: str):
     await db.users.update_one(
