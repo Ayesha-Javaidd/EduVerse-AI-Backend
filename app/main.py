@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.auth.auth_router import router as auth_router
 
 from app.routers import (
     admins,
@@ -14,7 +13,8 @@ from app.routers import (
     subscription,
     super_admin,
     teachers,
-    tenants
+    tenants,
+    auth
 )
 
 app = FastAPI(
@@ -44,7 +44,7 @@ def root():
 # Include routers
 
 
-app.include_router(auth_router)
+app.include_router(auth.router)
 
 
 # Eman

@@ -37,14 +37,6 @@ async def create_user(data: dict):
     new_user = await db.users.find_one({"_id": result.inserted_id})
     return serialize_user(new_user)
 
-# async def verify_user(email: str, password: str):
-#     u = await get_user_by_email(email)
-#     if not u:
-#         return None
-#     if not verify_password(password, u["password"]):
-#         return None
-#     return serialize_user(u)
-
 
 async def verify_user(email: str, password: str):
     u = await get_user_by_email(email)
