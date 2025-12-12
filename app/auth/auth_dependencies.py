@@ -1,5 +1,7 @@
 from fastapi import Depends, HTTPException, Header
-from app.core.security import decode_token
+
+from app.utils.security import decode_token
+
 
 def get_current_user(authorization: str = Header(None)):
     if not authorization:
