@@ -21,8 +21,6 @@ def serialize_user(u):
         "lastLogin": u.get("lastLogin")
     }
 
-# async def get_user_by_email(email: str):
-#     return await db.users.find_one({"email": email})
 
 async def get_user_by_email(email: str):
     return await db.users.find_one({"email": email.lower()})

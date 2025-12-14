@@ -1,6 +1,6 @@
 from fastapi import HTTPException
-from app.crud.user_crud import create_user, verify_user
-from app.crud.user_crud import update_last_login
+from app.crud.users import create_user, verify_user
+from app.crud.users import update_last_login
 from app.utils.security import create_access_token
 
 async def register_user(data):
