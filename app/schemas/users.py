@@ -1,20 +1,25 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
+
+
+# ---------- Base ----------
 
 class UserBase(BaseModel):
     fullName: str
     email: EmailStr
+    role: str                     # student | teacher | admin | super_admin
+    status: str = "active"
     profileImageURL: Optional[str] = None
     contactNo: Optional[str] = None
     country: Optional[str] = None
-    role: str
-    status: str = "active"
 
+
+# ---------- Requests ----------
 
 class UserCreate(UserBase):
-    password: str
-    tenant_id: Optional[str] = None
+    password: str = Field(..., min_length=6)
+    tenantId: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -22,12 +27,11 @@ class UserLogin(BaseModel):
     password: str = Field(..., max_length=72)
 
 
+# ---------- Responses ----------
 
 class UserResponse(UserBase):
     id: str
-    tenant_id: Optional[str]
-    enrolledCourses: List[str] = []
-    completedCourses: List[str] = []
+    tenantId: Optional[str]
     createdAt: datetime
     updatedAt: datetime
     lastLogin: Optional[datetime] = None

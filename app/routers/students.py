@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.schemas.student import (
+from app.schemas.students import (
     StudentCreate,
     StudentLogin,
     StudentUpdate,

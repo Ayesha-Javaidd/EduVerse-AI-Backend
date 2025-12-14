@@ -1,7 +1,7 @@
 
 from app.db.database import db
 from datetime import datetime
-from app.schemas.student import StudentCreate
+from app.schemas.students import StudentCreate
 from bson import ObjectId
 
 

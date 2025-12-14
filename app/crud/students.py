@@ -1,6 +1,6 @@
 from app.db.database import db
 from datetime import datetime
-from app.schemas.student import StudentCreate, StudentUpdate
+from app.schemas.students import StudentCreate, StudentUpdate
 from bson import ObjectId
 #from app.core.security import hash_password
 from app.core.settings import TENANT_ID
