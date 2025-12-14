@@ -14,8 +14,6 @@ def serialize_user(u):
         "role": u["role"],
         "status": u["status"],
         "tenant_id": str(u["tenant_id"]) if u.get("tenant_id") else None,
-        "enrolledCourses": u.get("enrolledCourses", []),
-        "completedCourses": u.get("completedCourses", []),
         "createdAt": u["createdAt"],
         "updatedAt": u["updatedAt"],
         "lastLogin": u.get("lastLogin")

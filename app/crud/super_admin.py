@@ -1,31 +1,28 @@
-from app.db.database import db
+from bson import ObjectId
 from datetime import datetime
+from app.db.database import db
 
 def serialize_admin(a):
     return {
         "id": str(a["_id"]),
-        "email": a["email"],
-        "fullName": a["fullName"],
-        "profileImageURL": a.get("profileImageURL", None),
-        "role": a.get("role", "super_admin"),
+        "userId": str(a["userId"]),
+        "profileImageURL": a.get("profileImageURL"),
+        "status": a.get("status", "active"),
         "createdAt": a.get("createdAt"),
-        "lastLogin": a.get("lastLogin")
+        "updatedAt": a.get("updatedAt"),
     }
 
-async def login_super_admin(email: str, password: str):
-    admin = await db.superAdmin.find_one({"email": email})
 
-    if not admin:
-        return "NOT_FOUND"
+async def get_admin_by_user(user_id: str):
+    a = await db.admins.find_one({"userId": ObjectId(user_id)})
+    return serialize_admin(a) if a else None
 
-    if password != admin["password"]:  
-        return "WRONG_PASSWORD"
 
-    new_login_time = datetime.utcnow()
-    await db.superAdmin.update_one(
-        {"_id": admin["_id"]},
-        {"$set": {"lastLogin": new_login_time}}
+async def update_admin_profile(user_id: str, updates: dict):
+    updates["updatedAt"] = datetime.utcnow()
+    await db.admins.update_one(
+        {"userId": ObjectId(user_id)},
+        {"$set": updates}
     )
-
-    admin["lastLogin"] = new_login_time
-    return serialize_admin(admin)
+    a = await db.admins.find_one({"userId": ObjectId(user_id)})
+    return serialize_admin(a)
