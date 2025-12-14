@@ -1,80 +1,31 @@
-from fastapi import APIRouter, HTTPException, status
-from app.schemas.students import (
-    StudentCreate,
-    StudentLogin,
-    StudentUpdate,
-    StudentResponse,
-)
+from fastapi import APIRouter, HTTPException, Depends
+from app.schemas.students import StudentUpdate, StudentResponse
 from app.crud import students as crud_student
+from app.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
-# ------------------- CREATE STUDENT -------------------
-@router.post("/", response_model=StudentResponse)
-async def create_student(student: StudentCreate):
-    new_student = await crud_student.create_student(student)
+@router.get("/me", response_model=StudentResponse)
+async def get_my_profile(current_user=Depends(get_current_user)):
+    if current_user["role"] != "student":
+        raise HTTPException(403, "Not a student")
 
-    # Convert _id -> id
-    new_student["id"] = new_student["_id"]
-    del new_student["_id"]
-
-    return StudentResponse(**new_student)
-
-
-# ------------------- LOGIN STUDENT -------------------
-@router.post("/login", response_model=StudentResponse)
-async def login_student(payload: StudentLogin):
-    db_student = await crud_student.get_student_by_email(payload.email)
-
-    if not db_student:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    if payload.password != db_student["password"]:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    # Convert _id -> id
-    db_student["id"] = db_student["_id"]
-    del db_student["_id"]
-
-    return StudentResponse(**db_student)
-
-
-# ------------------- GET ALL STUDENTS -------------------
-@router.get("/", response_model=list[StudentResponse])
-async def get_all_students():
-    students = await crud_student.list_students()
-
-    clean_students = []
-    for s in students:
-        s["id"] = s["_id"]
-        del s["_id"]
-        clean_students.append(StudentResponse(**s))
-
-    return clean_students
-
-
-# ------------------- GET SINGLE STUDENT -------------------
-@router.get("/{student_id}", response_model=StudentResponse)
-async def get_student(student_id: str):
-    student = await crud_student.get_student_by_id(student_id)
+    student = await crud_student.get_student_by_user(current_user["user_id"])
     if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+        raise HTTPException(404, "Student profile not found")
 
-    # Convert _id -> id
-    student["id"] = student["_id"]
-    del student["_id"]
-
-    return StudentResponse(**student)
+    return student
 
 
-# ------------------- UPDATE STUDENT -------------------
-@router.patch("/{student_id}", response_model=StudentResponse)
-async def update_student(student_id: str, update: StudentUpdate):
-    updated = await crud_student.update_student(student_id, update)
+@router.patch("/me", response_model=StudentResponse)
+async def update_my_profile(
+    update: StudentUpdate, current_user=Depends(get_current_user)
+):
+    if current_user["role"] != "student":
+        raise HTTPException(403, "Not a student")
 
-    # Convert _id -> id
-    updated["id"] = updated["_id"]
-    del updated["_id"]
-
-    return StudentResponse(**updated)
+    updated = await crud_student.update_student_profile(
+        current_user["user_id"], update.dict(exclude_unset=True)
+    )
+    return updated

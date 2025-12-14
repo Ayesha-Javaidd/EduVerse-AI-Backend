@@ -1,48 +1,41 @@
-# from fastapi import Depends, HTTPException, Header
+# from bson import ObjectId
+# from fastapi import Depends, HTTPException
+# from fastapi.security import OAuth2PasswordBearer
+# from app.db.database import db
 
 # from app.utils.security import decode_token
 
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-# def get_current_user(authorization: str = Header(None)):
-#     if not authorization:
-#         raise HTTPException(401, "Authorization header missing")
-
-#     token = authorization.replace("Bearer ", "")
+# async def get_current_user(token: str = Depends(oauth2_scheme)):
 #     payload = decode_token(token)
-#     return payload
+#     user = await db.users.find_one({"_id": ObjectId(payload["user_id"]), "status": "active"})
+#     if not user:
+#         raise HTTPException(401, "User not found or inactive")
+#     return {
+#         "id": str(user["_id"]),
+#         "role": user["role"],
+#         "tenantId": user.get("tenantId")
+#     }
 
 
-
-from fastapi import Depends, HTTPException, Header
-from app.utils.security import decode_token
+from fastapi import Depends
+from app.auth.router import oauth2_scheme
 from app.db.database import db
+from app.utils.security import decode_token
 from bson import ObjectId
+from fastapi import HTTPException
 
-async def get_current_user(authorization: str = Header(None)):
-    if not authorization:
-        raise HTTPException(401, "Authorization header missing")
 
-    token = authorization.replace("Bearer ", "")
+async def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_token(token)
-
-    user = await db.users.find_one({
-        "_id": ObjectId(payload["user_id"]),
-        "status": "active"
-    })
-
+    user = await db.users.find_one(
+        {"_id": ObjectId(payload["user_id"]), "status": "active"}
+    )
     if not user:
         raise HTTPException(401, "User not found or inactive")
-
     return {
-        "id": str(user["_id"]),
+        "user_id": str(user["_id"]),
         "role": user["role"],
-        "tenantId": user.get("tenantId")
+        "tenantId": user.get("tenantId"),
     }
-
-
-def require_roles(*roles):
-    async def role_checker(current_user = Depends(get_current_user)):
-        if current_user["role"] not in roles:
-            raise HTTPException(403, "Access forbidden")
-        return current_user
-    return role_checker

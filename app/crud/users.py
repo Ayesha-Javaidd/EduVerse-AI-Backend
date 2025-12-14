@@ -3,7 +3,8 @@ from datetime import datetime
 from app.db.database import db
 from app.utils.security import hash_password, verify_password
 
-def serialize_user(u):
+
+def serialize_user(u: dict):
     return {
         "id": str(u["_id"]),
         "fullName": u["fullName"],
@@ -16,10 +17,11 @@ def serialize_user(u):
         "tenant_id": str(u["tenant_id"]) if u.get("tenant_id") else None,
         "createdAt": u["createdAt"],
         "updatedAt": u["updatedAt"],
-        "lastLogin": u.get("lastLogin")
+        "lastLogin": u.get("lastLogin"),
     }
 
 
+# --- CRUD FUNCTIONS ---
 async def get_user_by_email(email: str):
     return await db.users.find_one({"email": email.lower()})
 
@@ -36,17 +38,12 @@ async def create_user(data: dict):
 
 async def verify_user(email: str, password: str):
     u = await get_user_by_email(email)
-    if not u:
-        print("User not found:", email)
-        return None
-    if not verify_password(password, u["password"]):
-        print("Password mismatch")
+    if not u or not verify_password(password, u["password"]):
         return None
     return serialize_user(u)
 
 
 async def update_last_login(user_id: str):
     await db.users.update_one(
-        {"_id": ObjectId(user_id)},
-        {"$set": {"lastLogin": datetime.utcnow()}}
+        {"_id": ObjectId(user_id)}, {"$set": {"lastLogin": datetime.utcnow()}}
     )

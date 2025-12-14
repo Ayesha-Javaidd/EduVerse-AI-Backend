@@ -55,7 +55,7 @@ app.include_router(student_performance.router)
 app.include_router(courses.router)
 
 # Ayesha
-app.include_router(super_admin.router)
+# app.include_router(super_admin.router)
 app.include_router(assignments.router)
 app.include_router(assignment_submissions.router)
 
