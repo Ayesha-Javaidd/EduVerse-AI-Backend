@@ -1,40 +1,41 @@
-async def get_teacher_by_user(user_id: str):
-    t = await db.teachers.find_one({"userId": ObjectId(user_id)})
-    return serialize_teacher(t) if t else None
-
-
-async def update_teacher_profile(user_id: str, updates: dict):
-    updates["updatedAt"] = datetime.utcnow()
-    await db.teachers.update_one({"userId": ObjectId(user_id)}, {"$set": updates})
-    t = await db.teachers.find_one({"userId": ObjectId(user_id)})
-    return serialize_teacher(t)
-
-
 from bson import ObjectId
 from datetime import datetime
 from app.db.database import db
 from app.crud.users import serialize_user
 
 
-def serialize_teacher(t, user=None):
-
+def serialize_teacher(t, user):
     return {
         "id": str(t["_id"]),
         "userId": str(t["userId"]),
-        "user": serialize_user(user) if user else None,  # attach user if available
-        "assignedCourses": [str(c) for c in t.get("assignedCourses", [])],
+        "user": serialize_user(user),  # attach user
+        "assignedCourses": t.get("assignedCourses", []),
         "qualifications": t.get("qualifications", []),
         "subjects": t.get("subjects", []),
-        "status": t.get("status", "active"),
+        "status": t.get("status"),
         "createdAt": t.get("createdAt"),
         "updatedAt": t.get("updatedAt"),
     }
 
 
+async def get_teacher_by_user(user_id: str):
+    teacher = await db.teachers.find_one({"userId": ObjectId(user_id)})
+    if not teacher:
+        return None
+
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        return None
+
+    return serialize_teacher(teacher, user)
+
+
 async def create_teacher(user_id: str):
     data = {
         "userId": ObjectId(user_id),
-        "coursesAssigned": [],
+        "assignedCourses": [],
+        "qualifications": [],
+        "subjects": [],
         "status": "active",
         "createdAt": datetime.utcnow(),
         "updatedAt": datetime.utcnow(),
@@ -43,30 +44,18 @@ async def create_teacher(user_id: str):
     result = await db.teachers.insert_one(data)
     teacher = await db.teachers.find_one({"_id": result.inserted_id})
 
-    # Attach user details if user exists
+    # Fetch the user document
     user = await db.users.find_one({"_id": ObjectId(user_id)})
-    return serialize_teacher(teacher, user)
 
-
-async def get_teacher_by_user(user_id: str):
-
-    teacher = await db.teachers.find_one({"userId": ObjectId(user_id)})
-    if not teacher:
-        return None
-
-    user = await db.users.find_one({"_id": ObjectId(user_id)})
     return serialize_teacher(teacher, user)
 
 
 async def update_teacher_profile(user_id: str, updates: dict):
-    """
-    Update teacher profile and corresponding user fields.
-    """
     teacher_fields = {}
     user_fields = {}
 
-    # ---- teacher fields ----
-    for field in ["status", "courses"]:
+    # ---- teacher-specific fields ----
+    for field in ["status", "assignedCourses", "qualifications", "subjects"]:
         if field in updates:
             teacher_fields[field] = updates[field]
 
