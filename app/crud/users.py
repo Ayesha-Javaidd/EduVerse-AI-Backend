@@ -21,19 +21,24 @@ def serialize_user(u: dict):
     }
 
 
+
 # --- CRUD FUNCTIONS ---
 async def get_user_by_email(email: str):
     return await db.users.find_one({"email": email.lower()})
 
 
 async def create_user(data: dict):
+    data["email"] = data["email"].lower()
     data["password"] = hash_password(data["password"])
     data["createdAt"] = datetime.utcnow()
     data["updatedAt"] = datetime.utcnow()
     data["lastLogin"] = None
+
     result = await db.users.insert_one(data)
     new_user = await db.users.find_one({"_id": result.inserted_id})
+
     return serialize_user(new_user)
+
 
 
 async def verify_user(email: str, password: str):

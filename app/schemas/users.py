@@ -24,7 +24,6 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6)
     tenantId: Optional[str] = None
-
     model_config = ConfigDict(validate_assignment=True)
 
 
@@ -44,5 +43,4 @@ class UserResponse(UserBase):
     createdAt: datetime
     updatedAt: datetime
     lastLogin: Optional[datetime] = None
-
     model_config = ConfigDict(from_attributes=True)
