@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from app.schemas.users import UserResponse
 
 
 class StudentCreate(BaseModel):
@@ -14,12 +15,11 @@ class StudentUpdate(BaseModel):
 class StudentResponse(BaseModel):
     id: str
     userId: str
+    user: UserResponse  # NESTED USER
     enrolledCourses: List[str] = []
     completedCourses: List[str] = []
     status: str
     createdAt: datetime
     updatedAt: datetime
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}

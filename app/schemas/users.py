@@ -5,10 +5,11 @@ from pydantic import ConfigDict
 
 # ---------- Base ----------
 
+
 class UserBase(BaseModel):
     fullName: str
     email: EmailStr
-    role: str                     # student | teacher | admin | super_admin
+    role: str  # student | teacher | admin | super_admin
     status: str = "active"
     profileImageURL: Optional[str] = None
     contactNo: Optional[str] = None
@@ -18,6 +19,7 @@ class UserBase(BaseModel):
 
 
 # ---------- Requests ----------
+
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6)
@@ -35,9 +37,10 @@ class UserLogin(BaseModel):
 
 # ---------- Responses ----------
 
+
 class UserResponse(UserBase):
     id: str
-    tenantId: Optional[str]
+    tenantId: Optional[str] = Field(None, alias="tenant_id")
     createdAt: datetime
     updatedAt: datetime
     lastLogin: Optional[datetime] = None
