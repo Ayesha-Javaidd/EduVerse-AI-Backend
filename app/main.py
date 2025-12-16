@@ -1,18 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.routers.roles import admins, students, super_admin, teachers
 from app.routers import (
-    admins,
     assignment_submissions,
     assignments,
     courses,
     quiz_submissions,
     quizzes,
     student_performance,
-    students,
     subscription,
-    super_admin,
-    teachers,
     tenants,
 )
 from app.routers.auth import admin_auth, student_auth, teacher_auth, login
