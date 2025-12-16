@@ -29,7 +29,7 @@ async def get_student_by_user(user_id: str):
     return serialize_student(student, user)
 
 
-async def create_student(user_id: str, tenant_id: str | None = None):
+async def create_student(user_id: str):
     data = {
         "userId": ObjectId(user_id),
         "enrolledCourses": [],
@@ -38,12 +38,14 @@ async def create_student(user_id: str, tenant_id: str | None = None):
         "createdAt": datetime.utcnow(),
         "updatedAt": datetime.utcnow(),
     }
-    if tenant_id is not None:
-        data["tenantId"] = ObjectId(tenant_id)
 
     result = await db.students.insert_one(data)
     student = await db.students.find_one({"_id": result.inserted_id})
-    return serialize_student(student)
+
+    # Fetch the user document
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
+
+    return serialize_student(student, user)
 
 
 async def update_student_profile(user_id: str, updates: dict):

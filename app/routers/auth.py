@@ -10,7 +10,6 @@ from app.db.database import db
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-
 @router.post("/signup")
 async def signup(payload: UserCreate):
 
@@ -28,7 +27,6 @@ async def signup(payload: UserCreate):
 
     user = await users.create_user(payload.dict())
 
-    # Profile creation
     if payload.role == "student":
         await students.create_student(user["id"])
 
@@ -36,10 +34,9 @@ async def signup(payload: UserCreate):
         await teachers.create_teacher(user["id"])
 
     elif payload.role == "admin":
-        await admins.create_admin(user["id"], payload.tenantId)
+        await admins.create_admin(user["id"])
 
     return {"message": "User registered successfully", "user": user}
-
 
 
 @router.post("/token")

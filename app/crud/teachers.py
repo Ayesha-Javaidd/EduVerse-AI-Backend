@@ -1,6 +1,3 @@
-
-
-
 async def get_teacher_by_user(user_id: str):
     t = await db.teachers.find_one({"userId": ObjectId(user_id)})
     return serialize_teacher(t) if t else None
@@ -8,10 +5,7 @@ async def get_teacher_by_user(user_id: str):
 
 async def update_teacher_profile(user_id: str, updates: dict):
     updates["updatedAt"] = datetime.utcnow()
-    await db.teachers.update_one(
-        {"userId": ObjectId(user_id)},
-        {"$set": updates}
-    )
+    await db.teachers.update_one({"userId": ObjectId(user_id)}, {"$set": updates})
     t = await db.teachers.find_one({"userId": ObjectId(user_id)})
     return serialize_teacher(t)
 
@@ -37,17 +31,14 @@ def serialize_teacher(t, user=None):
     }
 
 
-async def create_teacher(user_id: str, tenant_id: str | None = None):
-   
+async def create_teacher(user_id: str):
     data = {
         "userId": ObjectId(user_id),
-        "courses": [],
+        "coursesAssigned": [],
         "status": "active",
         "createdAt": datetime.utcnow(),
         "updatedAt": datetime.utcnow(),
     }
-    if tenant_id:
-        data["tenantId"] = ObjectId(tenant_id)
 
     result = await db.teachers.insert_one(data)
     teacher = await db.teachers.find_one({"_id": result.inserted_id})
@@ -58,9 +49,7 @@ async def create_teacher(user_id: str, tenant_id: str | None = None):
 
 
 async def get_teacher_by_user(user_id: str):
-    """
-    Fetch teacher by user_id along with user details.
-    """
+
     teacher = await db.teachers.find_one({"userId": ObjectId(user_id)})
     if not teacher:
         return None

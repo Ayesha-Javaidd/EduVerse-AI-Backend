@@ -14,15 +14,12 @@ def serialize_user(u: dict):
         "country": u.get("country"),
         "role": u["role"],
         "status": u["status"],
-        "tenant_id": str(u["tenant_id"]) if u.get("tenant_id") else None,
-        "createdAt": u["createdAt"],
+        "tenantId": str(u["tenantId"]) if u.get("tenantId") else None,
         "updatedAt": u["updatedAt"],
         "lastLogin": u.get("lastLogin"),
     }
 
 
-
-# --- CRUD FUNCTIONS ---
 async def get_user_by_email(email: str):
     return await db.users.find_one({"email": email.lower()})
 
@@ -34,11 +31,12 @@ async def create_user(data: dict):
     data["updatedAt"] = datetime.utcnow()
     data["lastLogin"] = None
 
+    if data.get("tenantId"):
+        data["tenantId"] = ObjectId(data["tenantId"])
+
     result = await db.users.insert_one(data)
     new_user = await db.users.find_one({"_id": result.inserted_id})
-
     return serialize_user(new_user)
-
 
 
 async def verify_user(email: str, password: str):
