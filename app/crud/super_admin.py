@@ -15,7 +15,7 @@ def serialize_superadmin(user_doc):
 
 
 async def get_superadmin_by_user(user_id: str):
-    user = await db.users.find_one({"_id": ObjectId(user_id), "role": "super_admin"})
+    user = await db.users.find_one({"_id": ObjectId(user_id), "role": "super-admin"})
     if not user:
         return None
     return serialize_superadmin(user)
