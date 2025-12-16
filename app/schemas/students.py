@@ -9,7 +9,18 @@ class StudentCreate(BaseModel):
 
 
 class StudentUpdate(BaseModel):
+    # ---- user fields ----
+    fullName: Optional[str] = None
+    profileImageURL: Optional[str] = None
+    contactNo: Optional[str] = None
+    country: Optional[str] = None
+
+    # ---- student fields ----
     status: Optional[str] = None
+    enrolledCourses: Optional[List[str]] = None
+    completedCourses: Optional[List[str]] = None
+
+    model_config = {"from_attributes": True}
 
 
 class StudentResponse(BaseModel):

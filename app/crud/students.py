@@ -43,9 +43,35 @@ async def create_student(user_id: str):
     return serialize_student(student)
 
 
-
 async def update_student_profile(user_id: str, updates: dict):
-    updates["updatedAt"] = datetime.utcnow()
-    await db.students.update_one({"userId": ObjectId(user_id)}, {"$set": updates})
-    s = await db.students.find_one({"userId": ObjectId(user_id)})
-    return serialize_student(s)
+    student_fields = {}
+    user_fields = {}
+
+    # ---- student fields ----
+    for field in ["status", "enrolledCourses", "completedCourses"]:
+        if field in updates:
+            student_fields[field] = updates[field]
+
+    # ---- user fields ----
+    for field in ["fullName", "profileImageURL", "contactNo", "country"]:
+        if field in updates:
+            user_fields[field] = updates[field]
+
+    if student_fields:
+        student_fields["updatedAt"] = datetime.utcnow()
+        await db.students.update_one(
+            {"userId": ObjectId(user_id)}, {"$set": student_fields}
+        )
+
+    if user_fields:
+        user_fields["updatedAt"] = datetime.utcnow()
+        await db.users.update_one({"_id": ObjectId(user_id)}, {"$set": user_fields})
+
+    # ---- fetch updated documents ----
+    student = await db.students.find_one({"userId": ObjectId(user_id)})
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not student or not user:
+        return None
+
+    return serialize_student(student, user)

@@ -3,6 +3,7 @@ from app.schemas.students import StudentUpdate, StudentResponse
 from app.crud import students as crud_student
 from app.auth.dependencies import get_current_user
 
+
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
@@ -25,7 +26,6 @@ async def update_my_profile(
     if current_user["role"] != "student":
         raise HTTPException(403, "Not a student")
 
-    updated = await crud_student.update_student_profile(
+    return await crud_student.update_student_profile(
         current_user["user_id"], update.dict(exclude_unset=True)
     )
-    return updated
