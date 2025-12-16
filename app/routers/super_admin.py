@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import get_current_user, require_role
 from app.schemas.super_admin import SuperAdminResponse, SuperAdminUpdate
 from app.crud.super_admin import get_superadmin_by_user, update_superadmin
 
-router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
+router = APIRouter(
+    prefix="/super-admin",
+    tags=["Super Admin"],
+    dependencies=[Depends(require_role("super-admin"))],
+)
 
 
 @router.get("/me", response_model=SuperAdminResponse)

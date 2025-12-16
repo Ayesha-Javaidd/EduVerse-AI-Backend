@@ -23,7 +23,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 def require_role(*allowed_roles: str):
     def role_checker(current_user=Depends(get_current_user)):
         if current_user["role"] not in allowed_roles:
-            raise HTTPException(status_code=403, detail="Forbidden: insufficient role")
+            raise HTTPException(status_code=403, detail="Forbidden: Insufficient Role")
         return current_user
 
     return role_checker

@@ -20,7 +20,7 @@ from app.routers import (
 
 app = FastAPI(
     title="EduVerse AI Backend",
-    description="Multi-tenant e-learning platform API",
+    description="Multi-Tenant E-Learning Platform API",
     version="1.0.0",
 )
 
