@@ -1,18 +1,35 @@
-# from fastapi import APIRouter, HTTPException
-# from app.schemas.super_admin import SuperAdminLogin, SuperAdminResponse
-# from app.crud.super_admin import login_super_admin
+from fastapi import APIRouter, Depends, HTTPException
+from app.auth.dependencies import get_current_user
+from app.schemas.super_admin import SuperAdminResponse, SuperAdminUpdate
+from app.crud.super_admin import get_superadmin_by_user, update_superadmin
 
-# router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
+router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
 
-# @router.post("/login", response_model=SuperAdminResponse)
-# async def super_admin_login_route(data: SuperAdminLogin):
-#     result = await login_super_admin(data.email, data.password)
+@router.get("/me", response_model=SuperAdminResponse)
+async def get_my_profile(current_user=Depends(get_current_user)):
+    if current_user["role"] != "super_admin":  # match role in DB
+        raise HTTPException(403, "Not a Super Admin")
 
-#     if result == "NOT_FOUND":
-#         raise HTTPException(status_code=404, detail="Super admin not found")
+    super_admin = await get_superadmin_by_user(current_user["user_id"])
+    if not super_admin:
+        raise HTTPException(404, "Super Admin profile not found")
 
-#     if result == "WRONG_PASSWORD":
-#         raise HTTPException(status_code=401, detail="Incorrect password")
+    return super_admin
 
-#     return result
+
+@router.patch("/me", response_model=SuperAdminResponse)
+async def update_my_profile(
+    update: SuperAdminUpdate, current_user=Depends(get_current_user)
+):
+    if current_user["role"] != "super_admin":
+        raise HTTPException(403, "Not a Super Admin")
+
+    updated = await update_superadmin(
+        current_user["user_id"], update.dict(exclude_unset=True)
+    )
+
+    if not updated:
+        raise HTTPException(404, "Super Admin profile not found")
+
+    return updated
