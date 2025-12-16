@@ -28,5 +28,3 @@ async def update_my_admin_profile(
     return await crud_admin.update_admin_profile(
         current_user["user_id"], update.dict(exclude_unset=True)
     )
-
-

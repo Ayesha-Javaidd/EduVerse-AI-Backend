@@ -15,6 +15,7 @@ def serialize_user(u: dict):
         "role": u["role"],
         "status": u["status"],
         "tenantId": str(u["tenantId"]) if u.get("tenantId") else None,
+        "createdAt": u.get("createdAt"),
         "updatedAt": u["updatedAt"],
         "lastLogin": u.get("lastLogin"),
     }
