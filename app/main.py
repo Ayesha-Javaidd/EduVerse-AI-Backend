@@ -6,7 +6,6 @@ from app.routers import (
     assignment_submissions,
     assignments,
     courses,
-    profile,
     quiz_submissions,
     quizzes,
     student_performance,
@@ -46,13 +45,10 @@ def root():
 # Include routers
 
 app.include_router(auth.router)
-
-app.include_router(profile.router)
 app.include_router(super_admin.router)
 app.include_router(admins.router)
 app.include_router(students.router)
 app.include_router(teachers.router)
-
 
 # Eman
 app.include_router(student_performance.router)
