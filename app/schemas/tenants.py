@@ -6,11 +6,34 @@ from pydantic import EmailStr, BaseModel, Field, HttpUrl, model_validator
 # -------------------------
 # Schema: Used when creating a tenant
 # -------------------------
+# class TenantCreate(BaseModel):
+#     tenantName: str = Field(
+#         ...,
+#         min_length=2,
+#         max_length=100,
+#         json_schema_extra={"example": "EduVerse School"},
+#     )
+#     tenantLogoUrl: Optional[HttpUrl] = Field(
+#         None, json_schema_extra={"example": "https://example.com/logo.png"}
+#     )
+#     adminEmail: EmailStr = Field(
+#         ..., json_schema_extra={"example": "admin@example.com"}
+#     )
+
+
 class TenantCreate(BaseModel):
-    tenantName: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "EduVerse School"})
-    tenantLogoUrl: Optional[HttpUrl] = Field(None, json_schema_extra={"example": "https://example.com/logo.png"})
-    adminEmail: EmailStr = Field(..., json_schema_extra={"example": "admin@example.com"})
-    subscriptionId: str = Field(..., json_schema_extra={"example": "6931699f9fbdab6e6528c050"})
+    tenantName: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        json_schema_extra={"example": "EduVerse School"},
+    )
+    tenantLogoUrl: Optional[HttpUrl] = None
+    adminEmail: EmailStr = Field(
+        ..., json_schema_extra={"example": "admin@example.com"}
+    )
+    subscriptionId: Optional[str] = None
+
 
 # -------------------------
 # Schema: Used when updating tenant information
@@ -32,6 +55,7 @@ class TenantUpdate(BaseModel):
                 if val == "":
                     data[key] = None  # do NOT overwrite
         return data
+
 
 # -------------------------
 # Schema: Response object returned to the frontend

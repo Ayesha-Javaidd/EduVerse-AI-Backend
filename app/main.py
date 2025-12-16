@@ -14,8 +14,8 @@ from app.routers import (
     super_admin,
     teachers,
     tenants,
-    auth,
 )
+from app.routers.auth import admin_auth, student_auth, teacher_auth, login
 
 app = FastAPI(
     title="EduVerse AI Backend",
@@ -44,7 +44,12 @@ def root():
 
 # Include routers
 
-app.include_router(auth.router)
+app.include_router(admin_auth.router)
+app.include_router(student_auth.router)
+app.include_router(teacher_auth.router)
+
+app.include_router(login.router)
+
 app.include_router(super_admin.router)
 app.include_router(admins.router)
 app.include_router(students.router)
